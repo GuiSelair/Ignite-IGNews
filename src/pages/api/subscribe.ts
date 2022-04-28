@@ -34,7 +34,6 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
                 name: nextAuthSession.user.name,
                 email: nextAuthSession.user.email
             });
-
             customer_id = stripeCheckoutCustomer.id;
 
             await fauna.query(
@@ -53,7 +52,7 @@ export default async (request: NextApiRequest, response: NextApiResponse) => {
             cancel_url: `${process.env.FRONTEND_URL}/`,
             success_url: `${process.env.FRONTEND_URL}/posts`,
             line_items: [{
-                price: "price_1KmLz1L8PWHCJZAmWdmtkJcg",
+                price: "price_1KtcHkK9GR4ePfDXTuSatuFO",
                 quantity: 1
             }],
             mode: "subscription",
