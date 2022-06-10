@@ -1,10 +1,22 @@
 import { GetStaticProps } from "next";
 import Head from "next/head";
+import { asText as PrismicHelperAsText } from "@prismicio/helpers";
+
 import { createClient } from "../../../prismicio";
 
 import styles from "./styles.module.scss";
 
-export default function Posts() {
+type IPost = {
+	slug: string;
+	title: string;
+	excerpt: string;
+	updatedAt: String;
+}
+interface IPosts {
+	posts: IPost[];
+}
+
+export default function Posts({ posts }: IPosts) {
 	return (
 		<>
 			<Head>
@@ -13,36 +25,13 @@ export default function Posts() {
 
 			<main className={styles.container}>
 				<div className={styles.posts}>
-					<a href="#">
-						<time>12 de março de 2021</time>
-						<strong>Teste</strong>
-						<p>
-							Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem,
-							quas officia dignissimos nesciunt impedit nulla at, pariatur vel
-							quasi quos enim. Laborum mollitia pariatur provident libero
-							exercitationem ab debitis similique!
-						</p>
-					</a>
-					<a href="#">
-						<time>12 de março de 2021</time>
-						<strong>Teste</strong>
-						<p>
-							Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem,
-							quas officia dignissimos nesciunt impedit nulla at, pariatur vel
-							quasi quos enim. Laborum mollitia pariatur provident libero
-							exercitationem ab debitis similique!
-						</p>
-					</a>
-					<a href="#">
-						<time>12 de março de 2021</time>
-						<strong>Teste</strong>
-						<p>
-							Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem,
-							quas officia dignissimos nesciunt impedit nulla at, pariatur vel
-							quasi quos enim. Laborum mollitia pariatur provident libero
-							exercitationem ab debitis similique!
-						</p>
-					</a>
+					{posts.map(post => (
+						<a href="#" key={post.slug}>
+							<time>{post.updatedAt}</time>
+							<strong>{post.title}</strong>
+							<p>{post.excerpt}</p>
+						</a>
+					))}
 				</div>
 			</main>
 		</>
@@ -56,16 +45,23 @@ export const getStaticProps: GetStaticProps = async () => {
 		fetch: ["post.title", "post.content"],
 		pageSize: 100,
 	});
-
+	
 	const posts = response.map((post) => {
 		return {
 			slug: post.uid,
+			title: PrismicHelperAsText(post.data.title),
+			excerpt: post.data.content.find(postContent => postContent.type === "paragraph")?.text ?? "",
+			updatedAt: new Date(post.last_publication_date).toLocaleDateString("pt-BR", {
+				day: "2-digit",
+				month: "long",
+				year: "numeric"
+			})
 		};
 	});
 
 	return {
 		props: {
-			posts: response,
+			posts,
 		},
 	};
 };
