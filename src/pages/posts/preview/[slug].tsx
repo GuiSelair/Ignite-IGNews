@@ -76,6 +76,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 					year: "numeric"
 				})
 			}
-		}
+		},
+		revalidate: 60 * 30 // 30 minutes
 	}
 }
